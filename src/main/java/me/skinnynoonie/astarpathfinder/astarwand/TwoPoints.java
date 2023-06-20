@@ -18,7 +18,7 @@ public class TwoPoints {
 
     public boolean isSameWorld() {
         if(pointOne == null || pointTwo == null) return false;
-        return pointOne.getWorld().getUID().equals(pointTwo.getWorld().getUID());
+        return pointOne.getWorld() == pointTwo.getWorld();
     }
 
     public boolean bothPointsSet() {
