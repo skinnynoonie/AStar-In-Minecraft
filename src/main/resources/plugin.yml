@@ -1,4 +1,6 @@
 name: AStarPathfinder
 version: '${project.version}'
-main: me.skinnynoonie.astarpathfinder.AStarPathfinder
+main: me.skinnynoonie.astarpathfinder.Main
 load: STARTUP
+commands:
+  giveastarwand:
