@@ -1,0 +1,4 @@
+name: AStarPathfinder
+version: '${project.version}'
+main: me.skinnynoonie.astarpathfinder.AStarPathfinder
+load: STARTUP
