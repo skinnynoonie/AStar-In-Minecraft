@@ -1,7 +1,10 @@
 package me.skinnynoonie.astarpathfinder.astarwand;
 
 import me.skinnynoonie.astarpathfinder.astar.AStarPathfinder;
+import me.skinnynoonie.astarpathfinder.astar.AStarResult;
+import me.skinnynoonie.astarpathfinder.astar.distances.EuclideanDistanceCalculator;
 import me.skinnynoonie.astarpathfinder.astar.distances.ManhattanDistanceCalculator;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -12,8 +15,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class AStarWandImpl implements Listener {
 
@@ -43,17 +46,17 @@ public class AStarWandImpl implements Listener {
             TwoPoints selectTwoPoints = twoPoints.get(uuid);
 
             long now = System.currentTimeMillis();
-            List<Location> path = new AStarPathfinder(500000)
+            AStarResult result = new AStarPathfinder(500000)
                     .setDistanceCalculator(new ManhattanDistanceCalculator())
                     .findPathTo(selectTwoPoints.getPointOne(), selectTwoPoints.getPointTwo());
             long time = System.currentTimeMillis() - now;
 
-            if(path == null) {
-                event.getPlayer().sendMessage(ChatColor.RED+"Failed! Took (ms): "+time);
+            if(!result.isSuccessful()) {
+                Bukkit.getLogger().log(Level.INFO, ChatColor.RED+"Failed! Took (iterations:"+result.getIterations()+"): "+time+"ms. Path: "+result.getPathDistance()+" blocks.");
                 return;
             }
-            event.getPlayer().sendMessage(ChatColor.GREEN+"Success! Took (ms): "+time);
-            path.forEach(
+            Bukkit.getLogger().log(Level.INFO, ChatColor.GREEN+"Success! Took (iterations:"+result.getIterations()+"): "+time+"ms. Path: "+result.getPathDistance()+" blocks.");
+            result.getPathTaken().forEach(
                     location -> location.getWorld().spigot().playEffect(location, Effect.COLOURED_DUST, 0, 1, 0, 0, 0, 1, 5, 64)
             );
         }

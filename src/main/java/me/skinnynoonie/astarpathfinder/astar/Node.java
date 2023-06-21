@@ -28,6 +28,10 @@ public class Node {
         return location;
     }
 
+    public Location asLocation(World world) {
+        return new Location(world, getX(), getY(), getZ());
+    }
+
     public Block getBlockAt(World world) {
         return world.getBlockAt(new Location(world, location.getX(), location.getY(), location.getZ()));
     }

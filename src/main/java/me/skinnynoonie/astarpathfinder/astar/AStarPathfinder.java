@@ -34,14 +34,12 @@ public class AStarPathfinder {
         this.maxIterations = maxIterations;
     }
 
-    @Nullable
-    public List<Location> findPathTo(Location from, Location to) {
+    public AStarResult findPathTo(Location from, Location to) {
         if(from.getWorld() != to.getWorld()) return null;
         return findPathTo(from.getWorld(), new ImmutableVector(from), new ImmutableVector(to));
     }
 
-    @Nullable
-    public List<Location> findPathTo(World world, ImmutableVector initialLocation, ImmutableVector endLocation) {
+    public AStarResult findPathTo(World world, ImmutableVector initialLocation, ImmutableVector endLocation) {
         nodeCache.clear();
         openList.clear();
         nodeCache.put(initialLocation, new Node(initialLocation.getX(), initialLocation.getY(), initialLocation.getZ()));
@@ -63,9 +61,8 @@ public class AStarPathfinder {
             currentNode.setClosed(true);
 
             if(currentNode.asImmutableVector().equals(endLocation)) {
-                System.out.println("Location found!");
                 //Will make an AStarResult Object to return instead of just a list of locations
-                return null;
+                return new AStarResult(world, initialLocation, endLocation, nodeCache, iterations, true);
             }
 
             for(Node neighbourNode : getNeighbours(currentNode)) {
@@ -84,7 +81,7 @@ public class AStarPathfinder {
                 }
             }
         }
-        return null;
+        return new AStarResult(world, initialLocation, endLocation, nodeCache, iterations, false);
     }
 
     private Node[] getNeighbours(Node node) {
