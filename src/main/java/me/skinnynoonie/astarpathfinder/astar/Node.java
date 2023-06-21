@@ -1,56 +1,83 @@
 package me.skinnynoonie.astarpathfinder.astar;
 
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 
 public class Node {
 
-    private final Location location;
+    private final ImmutableVector location;
     private Node parent;
     private boolean isClosed = false;
-    private int gCost;
-    private int hCost;
+    private double gCost;
+    private double hCost;
+
+    public Node(ImmutableVector immutableVector) {
+        this.location = immutableVector;
+    }
 
     public Node(Location location) {
-        this.location = location;
+        this(new ImmutableVector(location.getX(), location.getY(), location.getZ()));
+    }
+
+    public Node(double x, double y, double z) {
+        this(new ImmutableVector(x, y, z));
+    }
+
+    public ImmutableVector asImmutableVector() {
+        return location;
+    }
+
+    public Block getBlockAt(World world) {
+        return world.getBlockAt(new Location(world, location.getX(), location.getY(), location.getZ()));
+    }
+
+    public double getX() {
+        return location.getX();
+    }
+
+    public double getY() {
+        return location.getY();
+    }
+
+    public double getZ() {
+        return location.getZ();
     }
 
     public boolean isClosed() {
         return isClosed;
     }
 
-    public void setClosed(boolean closed) {
-        isClosed = closed;
-    }
-
-    public int getFCost() {
+    public double getFCost() {
         return gCost + hCost;
     }
 
-    public int getGCost() {
+    public double getGCost() {
         return gCost;
     }
 
-    public void setGCost(int gCost) {
-        this.gCost = gCost;
-    }
-
-    public int getHCost() {
+    public double getHCost() {
         return hCost;
-    }
-
-    public void setHCost(int hCost) {
-        this.hCost = hCost;
-    }
-
-    public Location getLocation() {
-        return location;
     }
 
     public Node getParent() {
         return parent;
     }
 
+    public void setClosed(boolean closed) {
+        isClosed = closed;
+    }
+
     public void setParent(Node parent) {
         this.parent = parent;
     }
+
+    public void setGCost(double gCost) {
+        this.gCost = gCost;
+    }
+
+    public void setHCost(double hCost) {
+        this.hCost = hCost;
+    }
+
 }

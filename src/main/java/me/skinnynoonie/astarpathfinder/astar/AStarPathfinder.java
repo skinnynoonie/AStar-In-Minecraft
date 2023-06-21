@@ -1,38 +1,51 @@
 package me.skinnynoonie.astarpathfinder.astar;
 
+import me.skinnynoonie.astarpathfinder.astar.distances.DistanceCalculator;
+import me.skinnynoonie.astarpathfinder.astar.distances.EuclideanDistanceCalculator;
+import org.bukkit.World;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.util.Vector;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class AStarPathfinder {
 
-    private final Vector[] neighbourChecks = new Vector[] {
-            new Vector(1,0,0),
-            new Vector(-1,0,0),
-            new Vector(0,0,1),
-            new Vector(0,0,-1),
+    /**
+     * Modules are here, this is what I like to call making the engine.
+     */
+    private DistanceCalculator distanceCalculator = new EuclideanDistanceCalculator();
+
+    private final ImmutableVector[] neighbourChecks = new ImmutableVector[] {
+            new ImmutableVector(1,0,0),
+            new ImmutableVector(-1,0,0),
+            new ImmutableVector(0,0,1),
+            new ImmutableVector(0,0,-1),
+            new ImmutableVector(0,1,0),
+            new ImmutableVector(0,-1,0),
     };
-    private final HashMap<Location, Node> nodeCache = new HashMap<>();
-    private final Node startingNode;
+    private final HashMap<ImmutableVector, Node> nodeCache = new HashMap<>();
+    private final ArrayList<Node> openList = new ArrayList<>();
     private final int maxIterations;
 
-    public AStarPathfinder(Location initialLocation, int maxIterations) {
-        this.startingNode = new Node(initialLocation);
+    public AStarPathfinder(int maxIterations) {
         this.maxIterations = maxIterations;
     }
 
     @Nullable
-    public List<Location> findPathTo(Location endLocation) {
-        if(endLocation.getWorld() != startingNode.getLocation().getWorld()) return null;
+    public List<Location> findPathTo(Location from, Location to) {
+        if(from.getWorld() != to.getWorld()) return null;
+        return findPathTo(from.getWorld(), new ImmutableVector(from), new ImmutableVector(to));
+    }
+
+    @Nullable
+    public List<Location> findPathTo(World world, ImmutableVector initialLocation, ImmutableVector endLocation) {
         nodeCache.clear();
-        nodeCache.put(startingNode.getLocation(), startingNode);
-        ArrayList<Node> openList = new ArrayList<>();
-        openList.add(startingNode);
-        startingNode.setGCost(0);
-        startingNode.setHCost(getDistance(startingNode.getLocation(), endLocation));
+        openList.clear();
+        nodeCache.put(initialLocation, new Node(initialLocation.getX(), initialLocation.getY(), initialLocation.getZ()));
+        openList.add(nodeCache.get(initialLocation));
 
         int iterations = 0;
         while (!openList.isEmpty() && iterations < maxIterations) {
@@ -49,18 +62,22 @@ public class AStarPathfinder {
             openList.remove(currentNode);
             currentNode.setClosed(true);
 
-            if(currentNode.getLocation().equals(endLocation)) {
-                return getTrace(currentNode);
+            if(currentNode.asImmutableVector().equals(endLocation)) {
+                System.out.println("Location found!");
+                //Will make an AStarResult Object to return instead of just a list of locations
+                return null;
             }
 
             for(Node neighbourNode : getNeighbours(currentNode)) {
-                if(neighbourNode.getLocation().getBlock().getType() != Material.AIR) continue;
                 if(neighbourNode.isClosed()) continue;
+                if(neighbourNode.getBlockAt(world).getType() != Material.AIR) {
+                    continue;
+                }
 
-                int newNeighbourGCost = currentNode.getGCost() + 10; //Hardcoded for now
+                double newNeighbourGCost = currentNode.getGCost() + distanceCalculator.calculateDistance(currentNode.asImmutableVector(), neighbourNode.asImmutableVector());
                 if(newNeighbourGCost < neighbourNode.getGCost() || !openList.contains(neighbourNode)) {
                     neighbourNode.setGCost(newNeighbourGCost);
-                    neighbourNode.setHCost(getDistance(neighbourNode.getLocation(), endLocation));
+                    neighbourNode.setHCost(distanceCalculator.calculateDistance(neighbourNode.asImmutableVector(), endLocation));
                     neighbourNode.setParent(currentNode);
 
                     if(!openList.contains(neighbourNode)) openList.add(neighbourNode);
@@ -70,35 +87,23 @@ public class AStarPathfinder {
         return null;
     }
 
-    private List<Location> getTrace(Node endNode) {
-        List<Location> trace = new ArrayList<>();
-        Node currentNode = endNode;
-        while (currentNode != startingNode) {
-            trace.add(currentNode.getLocation());
-            currentNode = currentNode.getParent();
-        }
-        trace.add(startingNode.getLocation());
-        Collections.reverse(trace);
-        return trace;
-    }
-
     private Node[] getNeighbours(Node node) {
         Node[] neighbourNodes = new Node[neighbourChecks.length];
         for(int i = 0; i < neighbourChecks.length; i++) {
-            Location neighbourLocation = node.getLocation().clone().add(neighbourChecks[i]);
+            ImmutableVector neighbourLocation = node.asImmutableVector().add(neighbourChecks[i]);
             if(!nodeCache.containsKey(neighbourLocation)) nodeCache.put(neighbourLocation, new Node(neighbourLocation));
             neighbourNodes[i] = nodeCache.get(neighbourLocation);
         }
         return neighbourNodes;
     }
 
-    private int getDistance(Location from, Location to) {
-        int distanceX = (int) Math.abs(to.getX() - from.getX());
-        int distanceZ = (int) Math.abs(to.getZ() - from.getZ());
-        if(distanceX > distanceZ) {
-            return (14*distanceZ + 10*(distanceX - distanceZ));
-        }
-        return (14*distanceX + 10*(distanceZ - distanceX));
+    public DistanceCalculator getDistanceCalculator() {
+        return distanceCalculator;
+    }
+
+    public AStarPathfinder setDistanceCalculator(DistanceCalculator distanceCalculator) {
+        this.distanceCalculator = distanceCalculator;
+        return this;
     }
 
 }

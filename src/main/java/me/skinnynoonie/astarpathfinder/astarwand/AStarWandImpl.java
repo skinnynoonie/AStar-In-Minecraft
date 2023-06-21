@@ -1,6 +1,7 @@
 package me.skinnynoonie.astarpathfinder.astarwand;
 
 import me.skinnynoonie.astarpathfinder.astar.AStarPathfinder;
+import me.skinnynoonie.astarpathfinder.astar.distances.ManhattanDistanceCalculator;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -27,31 +28,51 @@ public class AStarWandImpl implements Listener {
         UUID uuid = event.getPlayer().getUniqueId();
 
         if(event.getAction() == Action.LEFT_CLICK_BLOCK) {
-            Location location = event.getClickedBlock().getLocation().add(0, 1, 0);
-            twoPoints.putIfAbsent(uuid, new TwoPoints(location, null));
-            twoPoints.get(uuid).setPointOne(location);
-            location.getWorld().spigot().playEffect(location, Effect.COLOURED_DUST, 0, 1, 0, 0, 0, 1, 50, 64);
-            event.getPlayer().sendMessage(ChatColor.GREEN + "Point one has been set to: " + readableLocation(location));
+            pointOne(event, uuid);
         }
-
         if(event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            Location location = event.getClickedBlock().getLocation().add(0, 1, 0);
-            twoPoints.putIfAbsent(uuid, new TwoPoints(null, location));
-            twoPoints.get(uuid).setPointTwo(location);
-            location.getWorld().spigot().playEffect(location, Effect.COLOURED_DUST, 0, 1, 0, 0, 0, 1, 50, 64);
-            event.getPlayer().sendMessage(ChatColor.GREEN + "Point two has been set to: " + readableLocation(location));
+            pointTwo(event, uuid);
         }
-
         if(event.getAction() == Action.LEFT_CLICK_AIR && event.getPlayer().isSneaking()) {
             twoPoints.remove(uuid);
-            event.getPlayer().sendMessage(ChatColor.GREEN + "Successfully cleared your clipboard!");
+            event.getPlayer().sendMessage("Successfully cleared your clipboard!");
         }
 
         if(twoPoints.getOrDefault(uuid, new TwoPoints(null, null)).bothPointsSet() && twoPoints.get(uuid).isSameWorld()) {
-            event.getPlayer().sendMessage(ChatColor.GOLD + "Attempting the A* search...");
+            event.getPlayer().sendMessage("Attempting the A* search...");
             TwoPoints selectTwoPoints = twoPoints.get(uuid);
-            List<Location> path = new AStarPathfinder(selectTwoPoints.getPointOne(), 500).findPathTo(selectTwoPoints.getPointTwo());
+
+            long now = System.currentTimeMillis();
+            List<Location> path = new AStarPathfinder(500000)
+                    .setDistanceCalculator(new ManhattanDistanceCalculator())
+                    .findPathTo(selectTwoPoints.getPointOne(), selectTwoPoints.getPointTwo());
+            long time = System.currentTimeMillis() - now;
+
+            if(path == null) {
+                event.getPlayer().sendMessage(ChatColor.RED+"Failed! Took (ms): "+time);
+                return;
+            }
+            event.getPlayer().sendMessage(ChatColor.GREEN+"Success! Took (ms): "+time);
+            path.forEach(
+                    location -> location.getWorld().spigot().playEffect(location, Effect.COLOURED_DUST, 0, 1, 0, 0, 0, 1, 5, 64)
+            );
         }
+    }
+
+    private void pointOne(PlayerInteractEvent event, UUID uuid) {
+        Location location = event.getClickedBlock().getLocation().add(0, 1, 0);
+        twoPoints.putIfAbsent(uuid, new TwoPoints(location, null));
+        twoPoints.get(uuid).setPointOne(location);
+        location.getWorld().spigot().playEffect(location, Effect.COLOURED_DUST, 0, 1, 0, 0, 0, 1, 50, 64);
+        event.getPlayer().sendMessage("Point one has been set to: " + readableLocation(location));
+    }
+
+    private void pointTwo(PlayerInteractEvent event, UUID uuid) {
+        Location location = event.getClickedBlock().getLocation().add(0, 1, 0);
+        twoPoints.putIfAbsent(uuid, new TwoPoints(null, location));
+        twoPoints.get(uuid).setPointTwo(location);
+        location.getWorld().spigot().playEffect(location, Effect.COLOURED_DUST, 0, 1, 0, 0, 0, 1, 50, 64);
+        event.getPlayer().sendMessage("Point two has been set to: " + readableLocation(location));
     }
 
     @EventHandler
