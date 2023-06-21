@@ -1,5 +1,6 @@
 package me.skinnynoonie.astarpathfinder.astar;
 
+import me.skinnynoonie.astarpathfinder.astar.util.ImmutableVector;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -10,32 +11,20 @@ import java.util.List;
 
 public class AStarResult {
 
-    private final World world;
-    private final ImmutableVector start;
-    private final ImmutableVector end;
-    private final HashMap<ImmutableVector, Node> nodeCache;
-    private final int iterations;
-    private final boolean success;
-
-    public AStarResult(World world, ImmutableVector start, ImmutableVector end, HashMap<ImmutableVector, Node> nodeCache, int iterations, boolean success) {
-        this.world = world;
-        this.start = start;
-        this.end = end;
-        this.nodeCache = nodeCache;
-        this.iterations = iterations;
-        this.success = success;
-    }
+    private World world;
+    private ImmutableVector start;
+    private ImmutableVector end;
+    private HashMap<ImmutableVector, Node> nodeCache;
+    private int iterations = 0;
+    private boolean success = false;
 
     public List<Location> getPathTaken() {
+        if(!success) return null;
         List<Location> backTrack = new ArrayList<>();
         Node currentNode = nodeCache.get(end);
         while (currentNode != nodeCache.get(start)) {
             backTrack.add(currentNode.asLocation(world));
             currentNode = currentNode.getParent();
-            if(currentNode == null) {
-                Collections.reverse(backTrack);
-                return backTrack;
-            }
         }
         backTrack.add(nodeCache.get(start).asLocation(world));
         Collections.reverse(backTrack);
@@ -45,6 +34,7 @@ public class AStarResult {
     public double getPathDistance() {
         double distance = 0;
         List<Location> path = getPathTaken();
+        if(path == null) return distance;
         for (int i = 0; i < path.size() - 1; i++) {
             distance += path.get(i).distance(path.get(i+1));
         }
@@ -69,6 +59,36 @@ public class AStarResult {
 
     public boolean isSuccessful() {
         return success;
+    }
+
+    public AStarResult setWorld(World world) {
+        this.world = world;
+        return this;
+    }
+
+    public AStarResult setStart(ImmutableVector start) {
+        this.start = start;
+        return this;
+    }
+
+    public AStarResult setEnd(ImmutableVector end) {
+        this.end = end;
+        return this;
+    }
+
+    public AStarResult setNodeCache(HashMap<ImmutableVector, Node> nodeCache) {
+        this.nodeCache = nodeCache;
+        return this;
+    }
+
+    public AStarResult setIterations(int iterations) {
+        this.iterations = iterations;
+        return this;
+    }
+
+    public AStarResult setSuccess(boolean success) {
+        this.success = success;
+        return this;
     }
 
 }

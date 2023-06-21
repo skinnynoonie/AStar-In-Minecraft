@@ -1,4 +1,4 @@
-package me.skinnynoonie.astarpathfinder.astar;
+package me.skinnynoonie.astarpathfinder.astar.util;
 
 import org.bukkit.Location;
 

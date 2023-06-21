@@ -1,8 +1,7 @@
 package me.skinnynoonie.astarpathfinder.astarwand;
 
-import me.skinnynoonie.astarpathfinder.astar.AStarPathfinder;
+import me.skinnynoonie.astarpathfinder.astar.AStarEngine;
 import me.skinnynoonie.astarpathfinder.astar.AStarResult;
-import me.skinnynoonie.astarpathfinder.astar.distances.EuclideanDistanceCalculator;
 import me.skinnynoonie.astarpathfinder.astar.distances.ManhattanDistanceCalculator;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -46,8 +45,7 @@ public class AStarWandImpl implements Listener {
             TwoPoints selectTwoPoints = twoPoints.get(uuid);
 
             long now = System.currentTimeMillis();
-            AStarResult result = new AStarPathfinder(500000)
-                    .setDistanceCalculator(new ManhattanDistanceCalculator())
+            AStarResult result = new AStarLocationPathfinder()
                     .findPathTo(selectTwoPoints.getPointOne(), selectTwoPoints.getPointTwo());
             long time = System.currentTimeMillis() - now;
 

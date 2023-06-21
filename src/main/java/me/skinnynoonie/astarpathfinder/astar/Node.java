@@ -1,14 +1,14 @@
 package me.skinnynoonie.astarpathfinder.astar;
 
+import me.skinnynoonie.astarpathfinder.astar.util.ImmutableVector;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
-public class Node {
+public class Node implements Comparable<Node> {
 
     private final ImmutableVector location;
     private Node parent;
-    private boolean isClosed = false;
     private double gCost;
     private double hCost;
 
@@ -16,12 +16,13 @@ public class Node {
         this.location = immutableVector;
     }
 
-    public Node(Location location) {
-        this(new ImmutableVector(location.getX(), location.getY(), location.getZ()));
-    }
-
-    public Node(double x, double y, double z) {
-        this(new ImmutableVector(x, y, z));
+    @Override
+    public int compareTo(Node o) {
+        int isPriority = Double.compare(this.getFCost(), o.getFCost());
+        if(isPriority == 0) {
+            isPriority = Double.compare(this.getHCost(), o.getHCost());
+        }
+        return -isPriority;
     }
 
     public ImmutableVector asImmutableVector() {
@@ -29,27 +30,11 @@ public class Node {
     }
 
     public Location asLocation(World world) {
-        return new Location(world, getX(), getY(), getZ());
+        return new Location(world, location.getX(), location.getY(), location.getZ());
     }
 
     public Block getBlockAt(World world) {
         return world.getBlockAt(new Location(world, location.getX(), location.getY(), location.getZ()));
-    }
-
-    public double getX() {
-        return location.getX();
-    }
-
-    public double getY() {
-        return location.getY();
-    }
-
-    public double getZ() {
-        return location.getZ();
-    }
-
-    public boolean isClosed() {
-        return isClosed;
     }
 
     public double getFCost() {
@@ -68,10 +53,6 @@ public class Node {
         return parent;
     }
 
-    public void setClosed(boolean closed) {
-        isClosed = closed;
-    }
-
     public void setParent(Node parent) {
         this.parent = parent;
     }
@@ -83,5 +64,4 @@ public class Node {
     public void setHCost(double hCost) {
         this.hCost = hCost;
     }
-
 }

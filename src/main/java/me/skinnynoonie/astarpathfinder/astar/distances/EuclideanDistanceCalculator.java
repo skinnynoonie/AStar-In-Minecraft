@@ -1,6 +1,6 @@
 package me.skinnynoonie.astarpathfinder.astar.distances;
 
-import me.skinnynoonie.astarpathfinder.astar.ImmutableVector;
+import me.skinnynoonie.astarpathfinder.astar.util.ImmutableVector;
 
 public class EuclideanDistanceCalculator implements DistanceCalculator{
     @Override
