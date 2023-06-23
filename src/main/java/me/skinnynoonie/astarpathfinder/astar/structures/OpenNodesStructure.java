@@ -9,5 +9,7 @@ public interface OpenNodesStructure {
     void clear();
     boolean contains(Node node);
     boolean isEmpty();
+    default void update(Node node) {
+    }
 
 }

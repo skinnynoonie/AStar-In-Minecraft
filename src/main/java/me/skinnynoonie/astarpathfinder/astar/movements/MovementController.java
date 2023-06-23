@@ -8,6 +8,6 @@ public interface MovementController {
 
     boolean isTraversable(Block block);
     ImmutableVector[] getMovableOptions(Node node);
-    
+
 
 }

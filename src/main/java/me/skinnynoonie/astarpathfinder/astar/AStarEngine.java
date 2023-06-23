@@ -62,6 +62,7 @@ public class AStarEngine {
                     neighbourNode.setParent(currentNode);
 
                     if(!openNodesStructure.contains(neighbourNode)) openNodesStructure.add(neighbourNode);
+                    else openNodesStructure.update(neighbourNode);
                 }
             }
         }

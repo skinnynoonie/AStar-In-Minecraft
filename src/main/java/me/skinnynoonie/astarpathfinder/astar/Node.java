@@ -1,16 +1,18 @@
 package me.skinnynoonie.astarpathfinder.astar;
 
+import me.skinnynoonie.astarpathfinder.astar.structures.heap.HeapElement;
 import me.skinnynoonie.astarpathfinder.astar.util.ImmutableVector;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
-public class Node implements Comparable<Node> {
+public class Node implements HeapElement<Node> {
 
     private final ImmutableVector location;
     private Node parent;
     private double gCost;
     private double hCost;
+    private int heapIndex;
 
     public Node(ImmutableVector immutableVector) {
         this.location = immutableVector;
@@ -63,5 +65,15 @@ public class Node implements Comparable<Node> {
 
     public void setHCost(double hCost) {
         this.hCost = hCost;
+    }
+
+    @Override
+    public int getHeapIndex() {
+        return this.heapIndex;
+    }
+
+    @Override
+    public void setHeapIndex(int index) {
+        this.heapIndex = index;
     }
 }
