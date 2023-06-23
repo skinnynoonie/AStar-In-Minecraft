@@ -31,7 +31,7 @@ public class AStarEngine {
         openNodesStructure.clear();
         closedNodesStructure.clear();
 
-        nodeCache.put(initialLocation, new Node(initialLocation));
+        nodeCache.put(initialLocation, new Node(initialLocation, world));
         openNodesStructure.add(nodeCache.get(initialLocation));
 
         int iterations = 0;
@@ -51,14 +51,14 @@ public class AStarEngine {
                         .setSuccess(true);
             }
 
-            for(Node neighbourNode : getNeighbours(currentNode)) {
+            for(Node neighbourNode : getNeighbours(currentNode, world)) {
                 if(closedNodesStructure.contains(neighbourNode)) continue;
-                if(!movementController.isTraversable(neighbourNode.getBlockAt(world))) continue;
+                if(!movementController.isTraversable(neighbourNode)) continue;
 
-                double newNeighbourGCost = currentNode.getGCost() + distanceCalculator.calculateDistance(currentNode.asImmutableVector(), neighbourNode.asImmutableVector());
+                double newNeighbourGCost = currentNode.getGCost() + distanceCalculator.calculateDistance(currentNode.asImmutableVector(), neighbourNode.asImmutableVector()) + movementController.getBiasGCost(neighbourNode);
                 if(newNeighbourGCost < neighbourNode.getGCost() || !openNodesStructure.contains(neighbourNode)) {
                     neighbourNode.setGCost(newNeighbourGCost);
-                    neighbourNode.setHCost(distanceCalculator.calculateDistance(neighbourNode.asImmutableVector(), endLocation));
+                    neighbourNode.setHCost(distanceCalculator.calculateDistance(neighbourNode.asImmutableVector(), endLocation) * movementController.getBiasHCost(neighbourNode));
                     neighbourNode.setParent(currentNode);
 
                     if(!openNodesStructure.contains(neighbourNode)) openNodesStructure.add(neighbourNode);
@@ -75,12 +75,12 @@ public class AStarEngine {
                 .setSuccess(false);
     }
 
-    private Node[] getNeighbours(Node node) {
+    private Node[] getNeighbours(Node node, World world) {
         ImmutableVector[] movements = movementController.getMovableOptions(node);
         Node[] neighbourNodes = new Node[movements.length];
         for(int i = 0; i < movements.length; i++) {
             ImmutableVector neighbourLocation = node.asImmutableVector().add(movements[i]);
-            if(!nodeCache.containsKey(neighbourLocation)) nodeCache.put(neighbourLocation, new Node(neighbourLocation));
+            if(!nodeCache.containsKey(neighbourLocation)) nodeCache.put(neighbourLocation, new Node(neighbourLocation, world));
             neighbourNodes[i] = nodeCache.get(neighbourLocation);
         }
         return neighbourNodes;

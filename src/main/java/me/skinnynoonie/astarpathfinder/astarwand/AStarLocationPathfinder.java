@@ -18,7 +18,8 @@ public class AStarLocationPathfinder extends AStarEngine {
         super.setMovementController(new BasicStraightMovementController());
         super.setClosedNodesStructure(new ClosedNodesHashSet());
         super.setDistanceCalculator(new ManhattanDistanceCalculator());
-        //super.setOpenNodesStructure(new OpenNodesHeap(50000));
+        super.setMaxIterations(500000);
+        super.setOpenNodesStructure(new OpenNodesHeap(50000));
         return super.findPathTo(from.getWorld(), new ImmutableVector(from), new ImmutableVector(to));
     }
 

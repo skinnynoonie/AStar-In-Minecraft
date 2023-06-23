@@ -3,7 +3,6 @@ package me.skinnynoonie.astarpathfinder.astar.movements;
 import me.skinnynoonie.astarpathfinder.astar.util.ImmutableVector;
 import me.skinnynoonie.astarpathfinder.astar.Node;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 
 public class BasicStraightMovementController implements MovementController{
 
@@ -17,13 +16,23 @@ public class BasicStraightMovementController implements MovementController{
     };
 
     @Override
-    public boolean isTraversable(Block block) {
-        return block.getType() == Material.AIR;
+    public boolean isTraversable(Node node) {
+        return node.getBlockType() == Material.AIR;
     }
 
     @Override
     public ImmutableVector[] getMovableOptions(Node node) {
         return moves;
+    }
+
+    @Override
+    public double getBiasGCost(Node node) {
+        return 0;
+    }
+
+    @Override
+    public double getBiasHCost(Node node) {
+        return 0;
     }
 
 }

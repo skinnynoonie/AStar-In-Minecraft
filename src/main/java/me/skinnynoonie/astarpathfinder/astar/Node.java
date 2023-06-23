@@ -3,6 +3,7 @@ package me.skinnynoonie.astarpathfinder.astar;
 import me.skinnynoonie.astarpathfinder.astar.structures.heap.HeapElement;
 import me.skinnynoonie.astarpathfinder.astar.util.ImmutableVector;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
@@ -14,8 +15,13 @@ public class Node implements HeapElement<Node> {
     private double hCost;
     private int heapIndex;
 
-    public Node(ImmutableVector immutableVector) {
+    private final Block block;
+    private final Material blockType;
+
+    public Node(ImmutableVector immutableVector, World world) {
         this.location = immutableVector;
+        this.block = world.getBlockAt(new Location(world, location.getX(), location.getY(), location.getZ()));
+        this.blockType = this.block.getType();
     }
 
     @Override
@@ -35,8 +41,12 @@ public class Node implements HeapElement<Node> {
         return new Location(world, location.getX(), location.getY(), location.getZ());
     }
 
-    public Block getBlockAt(World world) {
-        return world.getBlockAt(new Location(world, location.getX(), location.getY(), location.getZ()));
+    public Block getBlockAt() {
+        return block;
+    }
+
+    public Material getBlockType() {
+        return blockType;
     }
 
     public double getFCost() {
