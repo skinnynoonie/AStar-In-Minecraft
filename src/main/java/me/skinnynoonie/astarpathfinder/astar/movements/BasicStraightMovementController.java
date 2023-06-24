@@ -32,7 +32,7 @@ public class BasicStraightMovementController implements MovementController{
 
     @Override
     public double getBiasHCost(Node node) {
-        return 0;
+        return 5;
     }
 
 }

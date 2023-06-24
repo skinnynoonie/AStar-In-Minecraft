@@ -28,7 +28,7 @@ public class OpenNodesHeap implements OpenNodesStructure {
 
     @Override
     public void clear() {
-
+        nodeHeap.clear();
     }
 
     @Override

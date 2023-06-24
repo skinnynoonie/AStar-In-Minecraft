@@ -39,7 +39,7 @@ public class AStarEngine {
             iterations++;
 
             Node currentNode = openNodesStructure.getAndRemoveFirst();
-            closedNodesStructure.add(currentNode);
+            currentNode.setClosed(true);
 
             if(currentNode.asImmutableVector().equals(endLocation)) {
                 return new AStarResult()
@@ -52,7 +52,7 @@ public class AStarEngine {
             }
 
             for(Node neighbourNode : getNeighbours(currentNode, world)) {
-                if(closedNodesStructure.contains(neighbourNode)) continue;
+                if(neighbourNode.isClosed()) continue;
                 if(!movementController.isTraversable(neighbourNode)) continue;
 
                 double newNeighbourGCost = currentNode.getGCost() + distanceCalculator.calculateDistance(currentNode.asImmutableVector(), neighbourNode.asImmutableVector()) + movementController.getBiasGCost(neighbourNode);

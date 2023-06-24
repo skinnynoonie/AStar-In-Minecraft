@@ -1,6 +1,7 @@
 package me.skinnynoonie.astarpathfinder.astar.structures.heap;
 
 import java.lang.reflect.Array;
+import java.util.Arrays;
 
 public class Heap<T extends HeapElement<T>> {
 
@@ -16,6 +17,10 @@ public class Heap<T extends HeapElement<T>> {
         heap[elementCount] = element;
         sortUpwards(element);
         elementCount++;
+    }
+
+    public void clear() {
+        Arrays.fill(heap, null);
     }
 
     public T getAndRemoveFirst() {

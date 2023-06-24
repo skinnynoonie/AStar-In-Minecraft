@@ -51,9 +51,12 @@ public class AStarWandImpl implements Listener {
 
             if(!result.isSuccessful()) {
                 Bukkit.getLogger().log(Level.INFO, ChatColor.RED+"Failed! Took (iterations:"+result.getIterations()+"): "+time+"ms. Path: "+result.getPathDistance()+" blocks.");
+                event.getPlayer().sendMessage(ChatColor.RED+"Failed! Took (iterations:"+result.getIterations()+"): "+time+"ms. Path: "+result.getPathDistance()+" blocks.");
                 return;
             }
             Bukkit.getLogger().log(Level.INFO, ChatColor.GREEN+"Success! Took (iterations:"+result.getIterations()+"): "+time+"ms. Path: "+result.getPathDistance()+" blocks.");
+            event.getPlayer().sendMessage(ChatColor.GREEN+"Success! Took (iterations:"+result.getIterations()+"): "+time+"ms. Path: "+result.getPathDistance()+" blocks.");
+
             result.getPathTaken().forEach(
                     location -> location.getWorld().spigot().playEffect(location, Effect.COLOURED_DUST, 0, 1, 0, 0, 0, 1, 5, 64)
             );

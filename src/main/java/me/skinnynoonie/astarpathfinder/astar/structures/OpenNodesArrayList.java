@@ -13,7 +13,7 @@ public class OpenNodesArrayList implements OpenNodesStructure {
         Node firstNode = nodes.get(0);
         for(int i = 1; i < nodes.size(); i++) {
             Node contestantNode = nodes.get(i);
-            if(contestantNode.getFCost() < firstNode.getFCost() || (contestantNode.getFCost() == firstNode.getFCost() && contestantNode.getHCost() < firstNode.getHCost())) {
+            if(contestantNode.compareTo(firstNode) > 0) {
                 firstNode = contestantNode;
             }
         }

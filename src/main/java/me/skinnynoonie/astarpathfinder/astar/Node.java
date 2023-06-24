@@ -14,6 +14,7 @@ public class Node implements HeapElement<Node> {
     private double gCost;
     private double hCost;
     private int heapIndex;
+    private boolean closed;
 
     private final Block block;
     private final Material blockType;
@@ -86,4 +87,13 @@ public class Node implements HeapElement<Node> {
     public void setHeapIndex(int index) {
         this.heapIndex = index;
     }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public void setClosed(boolean closed) {
+        this.closed = closed;
+    }
+
 }
