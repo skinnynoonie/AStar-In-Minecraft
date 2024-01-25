@@ -15,9 +15,6 @@ import java.util.HashMap;
 
 public class AStarEngine {
 
-    /**
-     * Modules are here, this is what I like to call making the engine.
-     */
     private DistanceCalculator distanceCalculator = new EuclideanDistanceCalculator();
     private OpenNodesStructure openNodesStructure = new OpenNodesArrayList();
     private ClosedNodesStructure closedNodesStructure = new ClosedNodesArrayList();
